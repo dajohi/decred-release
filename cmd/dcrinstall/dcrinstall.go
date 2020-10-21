@@ -21,6 +21,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/cf-guardian/guardian/kernel/fileutils"
 	"github.com/decred/dcrd/dcrutil/v3"
 )
 
@@ -146,6 +147,11 @@ var (
 		},
 		{
 			Name:   "dexcctl",
+			Dcrdex: true,
+			Copy:   true,
+		},
+		{
+			Name:   "site",
 			Dcrdex: true,
 			Copy:   true,
 		},
@@ -482,7 +488,8 @@ func (c *ctx) copy(version string) error {
 
 			// Install bitcoin/dex binary
 			var src string
-			if strings.Contains(v.Name, "dexc") {
+			if strings.Contains(v.Name, "dexc") ||
+				strings.Contains(v.Name, "site") {
 				src = filepath.Join(c.s.Destination,
 					"dexc-"+c.s.Tuple, v.Name)
 			} else {
@@ -496,8 +503,16 @@ func (c *ctx) copy(version string) error {
 				src += ".exe"
 				dst += ".exe"
 			}
+
 			c.log("dex files installing %v -> %v\n", src, dst)
-			err := fileCopy(src, dst)
+			fu := fileutils.New()
+			if fu.Exists(dst) {
+				err := os.RemoveAll(dst)
+				if err != nil {
+					return err
+				}
+			}
+			err := fu.Copy(dst, src)
 			if err != nil {
 				return err
 			}
