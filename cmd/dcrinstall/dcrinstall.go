@@ -498,10 +498,14 @@ func (c *ctx) copy(version string) error {
 			}
 			dst := filepath.Join(c.s.Destination,
 				filepath.Base(v.Name))
-			// Deal with windows.
-			if runtime.GOOS == "windows" {
-				src += ".exe"
-				dst += ".exe"
+
+			// XXX ARRGHHHGGHGHG
+			if strings.Contains(v.Name, "dexc") {
+				// Deal with windows.
+				if runtime.GOOS == "windows" {
+					src += ".exe"
+					dst += ".exe"
+				}
 			}
 
 			c.log("dex files installing %v -> %v\n", src, dst)
