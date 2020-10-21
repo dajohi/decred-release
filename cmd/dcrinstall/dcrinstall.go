@@ -500,7 +500,7 @@ func (c *ctx) copy(version string) error {
 				filepath.Base(v.Name))
 
 			// XXX ARRGHHHGGHGHG
-			if strings.Contains(v.Name, "dexc") {
+			if !strings.Contains(v.Name, "site") {
 				// Deal with windows.
 				if runtime.GOOS == "windows" {
 					src += ".exe"
